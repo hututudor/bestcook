@@ -32,7 +32,22 @@ export const userDoesNotExistsError = createError(
   StatusCodes.UNAUTHORIZED
 );
 
+export const userAlreadyConfirmedError = createError(
+  'User is already confirmed',
+  StatusCodes.CONFLICT
+);
+
+export const confirmationCodeIsInvalidError = createError(
+  'Confirmation code is invalid',
+  StatusCodes.BAD_REQUEST
+);
+
 export const emailOrPasswordIncorrectError = createError(
   'Email or password is incorrect',
   StatusCodes.NOT_FOUND
+);
+
+export const userNotConfirmedError = createError(
+  'User is not confirmed',
+  StatusCodes.UNAUTHORIZED
 );

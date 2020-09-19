@@ -1,10 +1,10 @@
-import { string } from 'yup';
-
 export interface User {
   id: string;
   name: string;
   email: string;
   password?: string;
+  confirmed: boolean;
+  confirmationCode?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -45,4 +45,14 @@ export interface GetUserDependencies {
 
 export interface GetUserData {
   jwt: string;
+}
+
+export interface ConfirmUserDependencies {
+  databaseGetUserByEmail: (email: string) => Promise<User | null>;
+  databaseSaveUser: (user: User) => Promise<User>;
+}
+
+export interface ConfirmUserData {
+  email: string;
+  code: string;
 }

@@ -18,6 +18,14 @@ const UserModel = model(
       password: {
         type: String,
         required: true
+      },
+      confirmed: {
+        type: Boolean,
+        default: false
+      },
+      confirmationCode: {
+        type: String,
+        required: true
       }
     },
     { timestamps: true }
@@ -30,6 +38,8 @@ const castMongoToInterface = (user: any): User => {
     name: user.name,
     email: user.email,
     password: user.password,
+    confirmed: user.confirmed,
+    confirmationCode: user.confirmationCode,
     updatedAt: user.updatedAt,
     createdAt: user.createdAt
   };
@@ -40,6 +50,8 @@ const castInterfaceToMongo = (user: User): any => {
     name: user.name,
     email: user.email,
     password: user.password,
+    confirmed: user.confirmed,
+    confirmationCode: user.confirmationCode,
     updatedAt: user.updatedAt,
     createdAt: user.createdAt
   };
@@ -68,7 +80,12 @@ export const databaseGetUserById = async (id: string): Promise<User | null> => {
 };
 
 export const databaseSaveUser = async (user: User): Promise<User> => {
-  const newUser = new UserModel(castInterfaceToMongo(user));
-  await newUser.save();
-  return castMongoToInterface(newUser);
+  try {
+    await UserModel.findByIdAndUpdate(user.id, castInterfaceToMongo(user));
+    return user;
+  } catch (e) {
+    const newUser = new UserModel(castInterfaceToMongo(user));
+    await newUser.save();
+    return castMongoToInterface(newUser);
+  }
 };

@@ -1,5 +1,10 @@
 import { Router } from 'express';
-import { getUser, loginUser, registerUser } from '../entities/user';
+import {
+  confirmUser,
+  getUser,
+  loginUser,
+  registerUser
+} from '../entities/user';
 import {
   databaseGetUserByEmail,
   databaseGetUserById,
@@ -46,5 +51,18 @@ userRouter.get(
 
     delete user.password;
     return user;
+  })
+);
+
+userRouter.post(
+  '/confirm',
+  restRequest(async req => {
+    return confirmUser({
+      databaseGetUserByEmail,
+      databaseSaveUser
+    })({
+      email: req.body.email,
+      code: req.body.code
+    });
   })
 );

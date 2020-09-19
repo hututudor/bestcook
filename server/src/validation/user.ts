@@ -23,3 +23,11 @@ export const loginSchema = yup.object().shape({
 export const getUserSchema = yup.object().shape({
   jwt: yup.string().required()
 });
+
+export const confirmUserSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email()
+    .required(),
+  code: yup.string().required()
+});

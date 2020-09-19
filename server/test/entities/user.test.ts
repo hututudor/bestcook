@@ -1,11 +1,19 @@
 import faker from 'faker';
 
-import { getUser, loginUser, registerUser } from '../../src/entities/user';
-import { User } from '../../src/interfaces/user';
 import {
+  confirmUser,
+  getUser,
+  loginUser,
+  registerUser
+} from '../../src/entities/user';
+import { ConfirmUserData, User } from '../../src/interfaces/user';
+import {
+  confirmationCodeIsInvalidError,
   emailOrPasswordIncorrectError,
   tokenInvalidError,
+  userAlreadyConfirmedError,
   userAlreadyExistsError,
+  userNotConfirmedError,
   validationFailed
 } from '../../src/utils/errors';
 import { compareWithEncrypted, encrypt } from '../../src/utils/cryptography';
@@ -16,6 +24,7 @@ import {
   createUserMock
 } from '../mocks/user';
 import { expectToThrow } from '../utils/expectToThrow';
+import { generateCode } from '../../src/utils/random';
 
 describe('user api', () => {
   describe('register', () => {
@@ -27,6 +36,9 @@ describe('user api', () => {
         expect(
           await compareWithEncrypted(data.password, user.password || '')
         ).toBeTruthy();
+
+        expect(user.confirmationCode).toBeTruthy();
+        expect(user.confirmationCode?.length).toBe(8);
         return user;
       };
 
@@ -37,7 +49,7 @@ describe('user api', () => {
 
       expect(response.user.name).toBe(data.name);
       expect(response.user.email).toBe(data.email);
-      expect(response.token).toBeTruthy();
+      expect(response.user.confirmationCode).toBeUndefined();
       expect(response.user.password).toBeUndefined();
     });
 
@@ -47,7 +59,7 @@ describe('user api', () => {
       const databaseGetUserByEmail = async () => createUserMock();
       const databaseSaveUser = async (user: User) => user;
 
-      expectToThrow(
+      await expectToThrow(
         registerUser({
           databaseSaveUser,
           databaseGetUserByEmail
@@ -63,7 +75,7 @@ describe('user api', () => {
       const databaseGetUserByEmail = async () => null;
       const databaseSaveUser = async (user: User) => user;
 
-      expectToThrow(
+      await expectToThrow(
         registerUser({
           databaseSaveUser,
           databaseGetUserByEmail
@@ -80,6 +92,7 @@ describe('user api', () => {
       const existingUser = createUserMock();
       existingUser.password = await encrypt(data.password);
       existingUser.email = data.email;
+      existingUser.confirmed = true;
 
       const databaseGetUserByEmail = async () => existingUser;
 
@@ -90,6 +103,7 @@ describe('user api', () => {
       expect(response.token).toBeTruthy();
       expect(response.user.name).toBe(existingUser.name);
       expect(response.user.email).toBe(data.email);
+      expect(response.user.confirmationCode).toBeUndefined();
       expect(response.user.password).toBeUndefined();
     });
 
@@ -98,7 +112,7 @@ describe('user api', () => {
 
       const databaseGetUserByEmail = async () => null;
 
-      expectToThrow(
+      await expectToThrow(
         loginUser({
           databaseGetUserByEmail
         })(data),
@@ -111,7 +125,7 @@ describe('user api', () => {
 
       const databaseGetUserByEmail = async () => createUserMock();
 
-      expectToThrow(
+      await expectToThrow(
         loginUser({
           databaseGetUserByEmail
         })(data),
@@ -125,11 +139,29 @@ describe('user api', () => {
 
       const databaseGetUserByEmail = async () => null;
 
-      expectToThrow(
+      await expectToThrow(
         loginUser({
           databaseGetUserByEmail
         })(data),
         validationFailed()
+      );
+    });
+
+    it('should throw if the user is not confirmed', async () => {
+      const data = createLoginDataMock();
+
+      const existingUser = createUserMock();
+      existingUser.password = await encrypt(data.password);
+      existingUser.email = data.email;
+      existingUser.confirmed = false;
+
+      const databaseGetUserByEmail = async () => existingUser;
+
+      await expectToThrow(
+        loginUser({
+          databaseGetUserByEmail
+        })(data),
+        userNotConfirmedError
       );
     });
   });
@@ -137,6 +169,7 @@ describe('user api', () => {
   describe('get', () => {
     it('should get user if token is valid', async () => {
       const existingUser = createUserMock();
+      existingUser.confirmed = true;
       const jwt = createJWT(existingUser);
 
       const databaseGetUserById = async (id: string) => {
@@ -156,7 +189,7 @@ describe('user api', () => {
     it('should throw if token is invalid', async () => {
       const databaseGetUserById = async () => null;
 
-      expectToThrow(
+      await expectToThrow(
         getUser({
           databaseGetUserById
         })({ jwt: 'token' }),
@@ -164,14 +197,111 @@ describe('user api', () => {
       );
     });
 
-    it('should throw if token is validation fails', async () => {
+    it('should throw if validation fails', async () => {
       const databaseGetUserById = async () => null;
 
-      expectToThrow(
+      await expectToThrow(
         getUser({
           databaseGetUserById
         })({ jwt: '' }),
         validationFailed()
+      );
+    });
+
+    it('should throw if user is not confirmed', async () => {
+      const user = createUserMock();
+      const databaseGetUserById = async () => user;
+
+      await expectToThrow(
+        getUser({
+          databaseGetUserById
+        })({ jwt: createJWT(user) }),
+        userNotConfirmedError
+      );
+    });
+  });
+
+  describe('confirm', () => {
+    it('should confirm user if code is valid', async () => {
+      const existingUser = createUserMock();
+
+      const data: ConfirmUserData = {
+        email: existingUser.email,
+        code: existingUser.confirmationCode || ''
+      };
+
+      const databaseGetUserByEmail = async (email: string) => existingUser;
+      const databaseSaveUser = async (user: User) => user;
+
+      const response = await confirmUser({
+        databaseGetUserByEmail,
+        databaseSaveUser
+      })(data);
+
+      expect(response.name).toBe(existingUser.name);
+      expect(response.email).toBe(existingUser.email);
+      expect(response.password).toBeUndefined();
+      expect(response.confirmationCode).toBeUndefined();
+    });
+
+    it('should throw if code is invalid', async () => {
+      const existingUser = createUserMock();
+
+      const data: ConfirmUserData = {
+        email: existingUser.email,
+        code: generateCode()
+      };
+
+      const databaseGetUserByEmail = async (email: string) => existingUser;
+      const databaseSaveUser = async (user: User) => user;
+
+      await expectToThrow(
+        confirmUser({
+          databaseGetUserByEmail,
+          databaseSaveUser
+        })(data),
+        confirmationCodeIsInvalidError
+      );
+    });
+
+    it('should throw if validation fails', async () => {
+      const existingUser = createUserMock();
+
+      const data: ConfirmUserData = {
+        email: '',
+        code: existingUser.confirmationCode || ''
+      };
+
+      const databaseGetUserByEmail = async (email: string) => existingUser;
+      const databaseSaveUser = async (user: User) => user;
+
+      await expectToThrow(
+        confirmUser({
+          databaseGetUserByEmail,
+          databaseSaveUser
+        })(data),
+        validationFailed()
+      );
+    });
+
+    it('should throw if user is already confirmed', async () => {
+      const existingUser = createUserMock();
+      existingUser.confirmed = true;
+
+      const data: ConfirmUserData = {
+        email: existingUser.email,
+        code: existingUser.confirmationCode || ''
+      };
+
+      const databaseGetUserByEmail = async (email: string) => existingUser;
+      const databaseSaveUser = async (user: User) => user;
+
+      await expectToThrow(
+        confirmUser({
+          databaseGetUserByEmail,
+          databaseSaveUser
+        })(data),
+        userAlreadyConfirmedError
       );
     });
   });
