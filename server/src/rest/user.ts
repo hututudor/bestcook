@@ -1,37 +1,50 @@
 import { Router } from 'express';
-import { loginUser, registerUser } from '../entities/user';
-import { databaseGetUserByEmail, databaseSaveUser } from '../mongodb/user';
+import { getUser, loginUser, registerUser } from '../entities/user';
+import {
+  databaseGetUserByEmail,
+  databaseGetUserById,
+  databaseSaveUser
+} from '../mongodb/user';
+import { restRequest } from '../utils/rest';
 
 export const userRouter = Router();
 
-userRouter.post('/register', async (req, res) => {
-  try {
-    const result = await registerUser({
+userRouter.post(
+  '/register',
+  restRequest(async req => {
+    return registerUser({
       databaseSaveUser,
       databaseGetUserByEmail
     })({
-      name: req.body.name as string,
-      email: req.body.email as string,
-      password: req.body.password as string
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password
     });
+  })
+);
 
-    res.status(200).json(result);
-  } catch (e) {
-    res.status(e.code || 500).json({ message: e.message, payload: e.payload });
-  }
-});
-
-userRouter.post('/login', async (req, res) => {
-  try {
-    const result = await loginUser({
+userRouter.post(
+  '/login',
+  restRequest(async req => {
+    return loginUser({
       databaseGetUserByEmail
     })({
-      email: req.body.email as string,
-      password: req.body.password as string
+      email: req.body.email,
+      password: req.body.password
+    });
+  })
+);
+
+userRouter.get(
+  '/me',
+  restRequest(async req => {
+    const user = await getUser({
+      databaseGetUserById
+    })({
+      jwt: req.header('x-token') || ''
     });
 
-    res.status(200).json(result);
-  } catch (e) {
-    res.status(e.code || 500).json({ message: e.message, payload: e.payload });
-  }
-});
+    delete user.password;
+    return user;
+  })
+);

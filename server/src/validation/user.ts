@@ -19,3 +19,7 @@ export const loginSchema = yup.object().shape({
     .required(),
   password: yup.string().required()
 });
+
+export const getUserSchema = yup.object().shape({
+  jwt: yup.string().required()
+});

@@ -57,6 +57,16 @@ export const databaseGetUserByEmail = async (
   return null;
 };
 
+export const databaseGetUserById = async (id: string): Promise<User | null> => {
+  const user = await UserModel.findById(id);
+
+  if (user) {
+    return castMongoToInterface(user);
+  }
+
+  return null;
+};
+
 export const databaseSaveUser = async (user: User): Promise<User> => {
   const newUser = new UserModel(castInterfaceToMongo(user));
   await newUser.save();

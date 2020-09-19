@@ -38,3 +38,11 @@ export interface LoginData {
   email: string;
   password: string;
 }
+
+export interface GetUserDependencies {
+  databaseGetUserById: (id: string) => Promise<User | null>;
+}
+
+export interface GetUserData {
+  jwt: string;
+}

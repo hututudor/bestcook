@@ -5,15 +5,18 @@ import {
   RegisterReturn,
   LoginDependencies,
   LoginData,
-  LoginReturn
+  LoginReturn,
+  GetUserDependencies,
+  GetUserData
 } from '../interfaces/user';
 import {
   emailOrPasswordIncorrectError,
-  userAlreadyExistsError
+  userAlreadyExistsError,
+  userDoesNotExistsError
 } from '../utils/errors';
-import { createJWT } from '../utils/jwt';
+import { createJWT, decodeJWT } from '../utils/jwt';
 import { compareWithEncrypted, encrypt } from '../utils/cryptography';
-import { loginSchema, registerSchema } from '../validation/user';
+import { getUserSchema, loginSchema, registerSchema } from '../validation/user';
 import { validateSchema } from '../utils/validateSchema';
 
 export const registerUser = ({
@@ -61,4 +64,19 @@ export const loginUser = ({
 
   const token = createJWT(user);
   return { token, user };
+};
+
+export const getUser = ({ databaseGetUserById }: GetUserDependencies) => async (
+  data: GetUserData
+): Promise<User> => {
+  await validateSchema(getUserSchema, data);
+
+  const userId = decodeJWT(data.jwt);
+  const user = await databaseGetUserById(userId);
+
+  if (!user) {
+    throw userDoesNotExistsError;
+  }
+
+  return user;
 };

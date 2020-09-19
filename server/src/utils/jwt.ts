@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 import { User } from '../interfaces/user';
+import { tokenInvalidError } from './errors';
 
 export const createJWT = (user: User): string => {
   return jwt.sign(
@@ -15,6 +16,10 @@ export const createJWT = (user: User): string => {
 };
 
 export const decodeJWT = (token: string): string => {
-  const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
-  return decoded.id;
+  try {
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
+    return decoded.id;
+  } catch (e) {
+    throw tokenInvalidError;
+  }
 };
