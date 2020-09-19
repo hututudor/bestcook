@@ -11,3 +11,11 @@ export const registerSchema = yup.object().shape({
     .min(5)
     .required()
 });
+
+export const loginSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email()
+    .required(),
+  password: yup.string().required()
+});
