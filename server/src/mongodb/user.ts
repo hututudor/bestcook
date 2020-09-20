@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 
 import { User } from '../interfaces/user';
-import { getModelByField, getModelById, saveModel } from '../utils/mongodb';
+import { getModelByField, getModelById, saveModel } from './utils/generics';
 
 const UserModel = model(
   'User',

@@ -3,14 +3,16 @@ import {
   confirmUser,
   getUser,
   loginUser,
-  registerUser
-} from '../entities/user';
+  registerUser,
+  sanitizeUser
+} from '../../entities/user';
 import {
   databaseGetUserByEmail,
   databaseGetUserById,
   databaseSaveUser
-} from '../mongodb/user';
-import { restRequest } from '../utils/rest';
+} from '../../mongodb/user';
+import { restRequest } from '../utils/restRequest';
+import { getToken } from '../../utils/getToken';
 
 export const userRouter = Router();
 
@@ -43,14 +45,13 @@ userRouter.post(
 userRouter.get(
   '/me',
   restRequest(async req => {
-    const user = await getUser({
-      databaseGetUserById
-    })({
-      jwt: req.header('x-token') || ''
-    });
-
-    delete user.password;
-    return user;
+    return sanitizeUser(
+      await getUser({
+        databaseGetUserById
+      })({
+        jwt: getToken(req)
+      })
+    );
   })
 );
 

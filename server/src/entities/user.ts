@@ -31,6 +31,13 @@ import { validateSchema } from '../utils/validateSchema';
 import { sendMail } from '../utils/mail';
 import { generateCode } from '../utils/random';
 
+export const sanitizeUser = (user: User): User => {
+  const newUser = { ...user };
+  delete newUser.password;
+  delete newUser.confirmationCode;
+  return newUser;
+};
+
 export const registerUser = ({
   databaseGetUserByEmail,
   databaseSaveUser
@@ -64,11 +71,8 @@ export const registerUser = ({
     `Your code is ${user.confirmationCode}`
   );
 
-  delete user.password;
-  delete user.confirmationCode;
-
   const token = createJWT(user);
-  return { token, user };
+  return { token, user: sanitizeUser(user) };
 };
 
 export const loginUser = ({
@@ -86,30 +90,8 @@ export const loginUser = ({
     throw userNotConfirmedError;
   }
 
-  delete user.password;
-  delete user.confirmationCode;
-
   const token = createJWT(user);
-  return { token, user };
-};
-
-export const getUser = ({ databaseGetUserById }: GetUserDependencies) => async (
-  data: GetUserData
-): Promise<User> => {
-  await validateSchema(getUserSchema, data);
-
-  const userId = decodeJWT(data.jwt);
-  const user = await databaseGetUserById(userId);
-
-  if (!user) {
-    throw userDoesNotExistsError;
-  }
-
-  if (!user.confirmed) {
-    throw userNotConfirmedError;
-  }
-
-  return user;
+  return { token, user: sanitizeUser(user) };
 };
 
 export const confirmUser = ({
@@ -136,8 +118,24 @@ export const confirmUser = ({
 
   await databaseSaveUser(user);
 
-  delete user.confirmationCode;
-  delete user.password;
+  return sanitizeUser(user);
+};
+
+export const getUser = ({ databaseGetUserById }: GetUserDependencies) => async (
+  data: GetUserData
+): Promise<User> => {
+  await validateSchema(getUserSchema, data);
+
+  const userId = decodeJWT(data.jwt);
+  const user = await databaseGetUserById(userId);
+
+  if (!user) {
+    throw userDoesNotExistsError;
+  }
+
+  if (!user.confirmed) {
+    throw userNotConfirmedError;
+  }
 
   return user;
 };

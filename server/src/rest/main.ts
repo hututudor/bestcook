@@ -5,7 +5,7 @@ import { connect } from 'mongoose';
 import morgan from 'morgan';
 import helmet from 'helmet';
 
-import { userRouter } from './user';
+import { userRouter } from './routes/user';
 
 connect(process.env.MONGO_URI as string, {
   useNewUrlParser: true,
