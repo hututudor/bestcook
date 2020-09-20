@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 
 import { User } from '../interfaces/user';
+import { getModelByField, getModelById, saveModel } from '../utils/mongodb';
 
 const UserModel = model(
   'User',
@@ -57,35 +58,21 @@ const castInterfaceToMongo = (user: User): any => {
   };
 };
 
-export const databaseGetUserByEmail = async (
-  email: string
-): Promise<User | null> => {
-  const [user] = await UserModel.find({ email });
+export const databaseGetUserByEmail = getModelByField<User, string>({
+  castInterfaceToMongo,
+  castMongoToInterface,
+  Model: UserModel,
+  field: 'email'
+});
 
-  if (user) {
-    return castMongoToInterface(user);
-  }
+export const databaseGetUserById = getModelById<User>({
+  castMongoToInterface,
+  castInterfaceToMongo,
+  Model: UserModel
+});
 
-  return null;
-};
-
-export const databaseGetUserById = async (id: string): Promise<User | null> => {
-  const user = await UserModel.findById(id);
-
-  if (user) {
-    return castMongoToInterface(user);
-  }
-
-  return null;
-};
-
-export const databaseSaveUser = async (user: User): Promise<User> => {
-  try {
-    await UserModel.findByIdAndUpdate(user.id, castInterfaceToMongo(user));
-    return user;
-  } catch (e) {
-    const newUser = new UserModel(castInterfaceToMongo(user));
-    await newUser.save();
-    return castMongoToInterface(newUser);
-  }
-};
+export const databaseSaveUser = saveModel<User>({
+  castMongoToInterface,
+  castInterfaceToMongo,
+  Model: UserModel
+});
