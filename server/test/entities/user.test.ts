@@ -5,11 +5,13 @@ import {
   getUser,
   loginUser,
   registerUser,
-  removeUser
+  removeUser,
+  updateUser
 } from '../../src/entities/user';
 import {
   ConfirmUserData,
   RemoveUserData,
+  UpdateUserData,
   User
 } from '../../src/interfaces/user';
 import {
@@ -306,6 +308,107 @@ describe('user api', () => {
           databaseSaveUser
         })(data),
         userAlreadyConfirmedError
+      );
+    });
+  });
+
+  describe('update', () => {
+    it('should update current user if a valid token is provided', async () => {
+      const existingUser = createUserMock(true);
+      const jwt = createJWT(existingUser);
+
+      const data: UpdateUserData = {
+        jwt,
+        name: faker.name.firstName(),
+        email: faker.internet.email(),
+        password: faker.internet.password(10)
+      };
+
+      const databaseGetUserById = async (id: string) => existingUser;
+      const databaseGetUserByEmail = async (id: string) => null;
+      const databaseSaveUser = async (user: User) => {
+        expect(
+          await compareWithEncrypted(data.password || '', user.password || '')
+        ).toBeTruthy();
+        return user;
+      };
+
+      const response = await updateUser({
+        databaseGetUserByEmail,
+        databaseGetUserById,
+        databaseSaveUser
+      })(data);
+
+      expect(response.name).toBe(data.name);
+      expect(response.email).toBe(data.email);
+      expect(response.password).toBeUndefined();
+      expect(response.confirmationCode).toBeUndefined();
+    });
+
+    it('should throw if token is invalid', async () => {
+      const existingUser = createUserMock();
+      const jwt = createJWT(existingUser);
+
+      const data: UpdateUserData = {
+        jwt,
+        email: faker.internet.userName()
+      };
+
+      const databaseGetUserById = async (id: string) => existingUser;
+      const databaseGetUserByEmail = async (email: string) => null;
+      const databaseSaveUser = async (user: User) => user;
+
+      await expectToThrow(
+        updateUser({
+          databaseGetUserById,
+          databaseGetUserByEmail,
+          databaseSaveUser
+        })(data),
+        validationFailed()
+      );
+    });
+
+    it('should throw if email is in use', async () => {
+      const existingUser = createUserMock(true);
+      const jwt = createJWT(existingUser);
+
+      const data: UpdateUserData = {
+        jwt,
+        email: faker.internet.email()
+      };
+
+      const databaseGetUserById = async (id: string) => existingUser;
+      const databaseGetUserByEmail = async (email: string) => existingUser;
+      const databaseSaveUser = async (user: User) => user;
+
+      await expectToThrow(
+        updateUser({
+          databaseGetUserById,
+          databaseGetUserByEmail,
+          databaseSaveUser
+        })(data),
+        userAlreadyExistsError
+      );
+    });
+
+    it('should throw if validation failed', async () => {
+      const existingUser = createUserMock();
+
+      const data: UpdateUserData = {
+        jwt: 'token'
+      };
+
+      const databaseGetUserById = async (id: string) => existingUser;
+      const databaseGetUserByEmail = async (email: string) => null;
+      const databaseSaveUser = async (user: User) => user;
+
+      await expectToThrow(
+        updateUser({
+          databaseGetUserById,
+          databaseGetUserByEmail,
+          databaseSaveUser
+        })(data),
+        tokenInvalidError
       );
     });
   });

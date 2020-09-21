@@ -11,7 +11,9 @@ import {
   ConfirmUserDependencies,
   ConfirmUserData,
   RemoveUserDependencies,
-  RemoveUserData
+  RemoveUserData,
+  UpdateUserDependencies,
+  UpdateUserData
 } from '../interfaces/user';
 import {
   confirmationCodeIsInvalidError,
@@ -27,11 +29,13 @@ import {
   confirmUserSchema,
   getUserSchema,
   loginSchema,
-  registerSchema
+  registerSchema,
+  updateUserSchema
 } from '../validation/user';
 import { validateSchema } from '../utils/validateSchema';
 import { sendMail } from '../utils/mail';
 import { generateCode } from '../utils/random';
+import { databaseGetUserByEmail, databaseSaveUser } from '../mongodb/user';
 
 export const sanitizeUser = (user: User): User => {
   const newUser = { ...user };
@@ -119,7 +123,6 @@ export const confirmUser = ({
   user.confirmed = true;
 
   await databaseSaveUser(user);
-
   return sanitizeUser(user);
 };
 
@@ -149,6 +152,35 @@ export const removeUser = ({
   const user = await getUser({ databaseGetUserById })(data);
 
   await databaseRemoveUser(user);
+  return sanitizeUser(user);
+};
 
+export const updateUser = ({
+  databaseGetUserById,
+  databaseGetUserByEmail,
+  databaseSaveUser
+}: UpdateUserDependencies) => async (data: UpdateUserData): Promise<User> => {
+  await validateSchema(updateUserSchema, data);
+  const user = await getUser({ databaseGetUserById })(data);
+
+  if (data.name) {
+    user.name = data.name;
+  }
+
+  if (data.email) {
+    const existingUser = await databaseGetUserByEmail(data.email);
+
+    if (existingUser) {
+      throw userAlreadyExistsError;
+    }
+
+    user.email = data.email;
+  }
+
+  if (data.password) {
+    user.password = await encrypt(data.password);
+  }
+
+  await databaseSaveUser(user);
   return sanitizeUser(user);
 };

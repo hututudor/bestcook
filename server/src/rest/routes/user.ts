@@ -5,7 +5,8 @@ import {
   loginUser,
   registerUser,
   removeUser,
-  sanitizeUser
+  sanitizeUser,
+  updateUser
 } from '../../entities/user';
 import {
   databaseGetUserByEmail,
@@ -66,6 +67,22 @@ userRouter.post(
     })({
       email: req.body.email,
       code: req.body.code
+    });
+  })
+);
+
+userRouter.put(
+  '/',
+  restRequest(async req => {
+    return updateUser({
+      databaseGetUserByEmail,
+      databaseGetUserById,
+      databaseSaveUser
+    })({
+      jwt: getToken(req),
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password
     });
   })
 );

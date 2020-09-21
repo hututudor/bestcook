@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import * as faker from 'faker';
 
 export const registerSchema = yup.object().shape({
   name: yup.string().required(),
@@ -30,4 +31,16 @@ export const confirmUserSchema = yup.object().shape({
     .email()
     .required(),
   code: yup.string().required()
+});
+
+export const updateUserSchema = yup.object().shape({
+  name: yup.string(),
+  email: yup
+    .string()
+    .email()
+    .notRequired(),
+  password: yup
+    .string()
+    .min(5)
+    .notRequired()
 });

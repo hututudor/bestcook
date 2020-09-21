@@ -17,17 +17,17 @@ connect(process.env.MONGO_URI as string, {
 
 const app = express();
 
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Listening on http://localhost:${port}`);
+});
+
 app.use(express.json());
 app.use(morgan('tiny'));
 app.use(helmet());
 
-app.get('/', (req, res) => {
-  res.send('Server is up and running');
-});
-
 app.use('/users', userRouter);
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Listening on http://localhost:${port}`);
+app.get('/', (req, res) => {
+  res.send('Server is up and running');
 });

@@ -64,3 +64,15 @@ export interface RemoveUserData {
 export interface RemoveUserDependencies extends GetUserDependencies {
   databaseRemoveUser: (user: User) => void;
 }
+
+export interface UpdateUserData {
+  jwt: string;
+  name?: string;
+  email?: string;
+  password?: string;
+}
+
+export interface UpdateUserDependencies extends GetUserDependencies {
+  databaseSaveUser: (user: User) => Promise<User>;
+  databaseGetUserByEmail: (email: string) => Promise<User | null>;
+}
