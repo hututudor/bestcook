@@ -9,7 +9,9 @@ import {
   GetUserDependencies,
   GetUserData,
   ConfirmUserDependencies,
-  ConfirmUserData
+  ConfirmUserData,
+  RemoveUserDependencies,
+  RemoveUserData
 } from '../interfaces/user';
 import {
   confirmationCodeIsInvalidError,
@@ -138,4 +140,15 @@ export const getUser = ({ databaseGetUserById }: GetUserDependencies) => async (
   }
 
   return user;
+};
+
+export const removeUser = ({
+  databaseGetUserById,
+  databaseRemoveUser
+}: RemoveUserDependencies) => async (data: RemoveUserData): Promise<User> => {
+  const user = await getUser({ databaseGetUserById })(data);
+
+  await databaseRemoveUser(user);
+
+  return sanitizeUser(user);
 };

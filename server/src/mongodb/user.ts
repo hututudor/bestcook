@@ -1,7 +1,12 @@
 import { Schema, model } from 'mongoose';
 
 import { User } from '../interfaces/user';
-import { getModelByField, getModelById, saveModel } from './utils/generics';
+import {
+  getModelByField,
+  getModelById,
+  removeModel,
+  saveModel
+} from './utils/generics';
 
 const UserModel = model(
   'User',
@@ -72,6 +77,12 @@ export const databaseGetUserById = getModelById<User>({
 });
 
 export const databaseSaveUser = saveModel<User>({
+  castMongoToInterface,
+  castInterfaceToMongo,
+  Model: UserModel
+});
+
+export const databaseRemoveUser = removeModel<User>({
   castMongoToInterface,
   castInterfaceToMongo,
   Model: UserModel

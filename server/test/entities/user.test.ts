@@ -4,9 +4,14 @@ import {
   confirmUser,
   getUser,
   loginUser,
-  registerUser
+  registerUser,
+  removeUser
 } from '../../src/entities/user';
-import { ConfirmUserData, User } from '../../src/interfaces/user';
+import {
+  ConfirmUserData,
+  RemoveUserData,
+  User
+} from '../../src/interfaces/user';
 import {
   confirmationCodeIsInvalidError,
   emailOrPasswordIncorrectError,
@@ -285,8 +290,7 @@ describe('user api', () => {
     });
 
     it('should throw if user is already confirmed', async () => {
-      const existingUser = createUserMock();
-      existingUser.confirmed = true;
+      const existingUser = createUserMock(true);
 
       const data: ConfirmUserData = {
         email: existingUser.email,
@@ -302,6 +306,82 @@ describe('user api', () => {
           databaseSaveUser
         })(data),
         userAlreadyConfirmedError
+      );
+    });
+  });
+
+  describe('remove', () => {
+    it('should remove current user if a valid token is provided', async () => {
+      const existingUser = createUserMock(true);
+      const jwt = createJWT(existingUser);
+
+      const data: RemoveUserData = {
+        jwt
+      };
+
+      const databaseGetUserById = async (id: string) => existingUser;
+      const databaseRemoveUser = async (user: User) => user;
+
+      const response = await removeUser({
+        databaseGetUserById,
+        databaseRemoveUser
+      })(data);
+
+      expect(response.name).toBe(existingUser.name);
+      expect(response.email).toBe(existingUser.email);
+      expect(response.password).toBeUndefined();
+      expect(response.confirmationCode).toBeUndefined();
+    });
+
+    it('should throw if token is invalid', async () => {
+      const existingUser = createUserMock();
+
+      const data: RemoveUserData = {
+        jwt: 'token'
+      };
+
+      const databaseGetUserById = async (id: string) => existingUser;
+      const databaseRemoveUser = async (user: User) => user;
+
+      await expectToThrow(
+        removeUser({
+          databaseGetUserById,
+          databaseRemoveUser
+        })(data),
+        tokenInvalidError
+      );
+    });
+
+    it('should throw if validation fails', async () => {
+      const databaseGetUserById = async (id: string) => null;
+      const databaseRemoveUser = async (user: User) => user;
+
+      await expectToThrow(
+        removeUser({
+          databaseGetUserById,
+          databaseRemoveUser
+        })({ jwt: '' }),
+        validationFailed()
+      );
+    });
+
+    it('should throw if user is not confirmed', async () => {
+      const existingUser = createUserMock();
+      const jwt = createJWT(existingUser);
+
+      const data: RemoveUserData = {
+        jwt
+      };
+
+      const databaseGetUserById = async (id: string) => existingUser;
+      const databaseRemoveUser = async (user: User) => user;
+
+      await expectToThrow(
+        removeUser({
+          databaseGetUserById,
+          databaseRemoveUser
+        })(data),
+        userNotConfirmedError
       );
     });
   });

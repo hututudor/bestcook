@@ -61,3 +61,9 @@ export function saveModel<T extends HasId>({
     }
   };
 }
+
+export function removeModel<T extends HasId>({ Model }: CastDependencies<T>) {
+  return async function(model: T): Promise<T> {
+    return Model.findByIdAndDelete(model.id);
+  };
+}

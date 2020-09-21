@@ -4,15 +4,17 @@ import {
   getUser,
   loginUser,
   registerUser,
+  removeUser,
   sanitizeUser
 } from '../../entities/user';
 import {
   databaseGetUserByEmail,
   databaseGetUserById,
+  databaseRemoveUser,
   databaseSaveUser
 } from '../../mongodb/user';
 import { restRequest } from '../utils/restRequest';
-import { getToken } from '../../utils/getToken';
+import { getToken } from '../utils/getToken';
 
 export const userRouter = Router();
 
@@ -64,6 +66,18 @@ userRouter.post(
     })({
       email: req.body.email,
       code: req.body.code
+    });
+  })
+);
+
+userRouter.delete(
+  '/',
+  restRequest(async req => {
+    return removeUser({
+      databaseGetUserById,
+      databaseRemoveUser
+    })({
+      jwt: getToken(req)
     });
   })
 );

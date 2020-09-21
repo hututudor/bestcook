@@ -56,3 +56,11 @@ export interface ConfirmUserData {
   email: string;
   code: string;
 }
+
+export interface RemoveUserData {
+  jwt: string;
+}
+
+export interface RemoveUserDependencies extends GetUserDependencies {
+  databaseRemoveUser: (user: User) => void;
+}
