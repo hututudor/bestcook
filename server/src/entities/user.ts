@@ -77,8 +77,8 @@ export const registerUser = ({
     `Your code is ${user.confirmationCode}`
   );
 
-  const token = createJWT(user);
-  return { token, user: sanitizeUser(user) };
+  const jwt = createJWT(user);
+  return { jwt, user: sanitizeUser(user) };
 };
 
 export const loginUser = ({
@@ -96,8 +96,8 @@ export const loginUser = ({
     throw userNotConfirmedError;
   }
 
-  const token = createJWT(user);
-  return { token, user: sanitizeUser(user) };
+  const jwt = createJWT(user);
+  return { jwt, user: sanitizeUser(user) };
 };
 
 export const confirmUser = ({

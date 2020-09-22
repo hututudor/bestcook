@@ -58,6 +58,7 @@ describe('user api', () => {
       expect(response.user.email).toBe(data.email);
       expect(response.user.confirmationCode).toBeUndefined();
       expect(response.user.password).toBeUndefined();
+      expect(response.jwt).toBeTruthy();
     });
 
     it('should throw if email already exists', async () => {
@@ -107,7 +108,7 @@ describe('user api', () => {
         databaseGetUserByEmail
       })(data);
 
-      expect(response.token).toBeTruthy();
+      expect(response.jwt).toBeTruthy();
       expect(response.user.name).toBe(existingUser.name);
       expect(response.user.email).toBe(data.email);
       expect(response.user.confirmationCode).toBeUndefined();

@@ -1,22 +1,31 @@
-export interface User {
-  id: string;
+import {
+  DatabaseGetByField,
+  DatabaseGetById,
+  DatabaseRemove,
+  DatabaseSave,
+  HasID,
+  HasTimestamps
+} from './utils/generics';
+
+export interface HasToken {
+  jwt: string;
+}
+
+export interface User extends HasID, HasTimestamps {
   name: string;
   email: string;
   password?: string;
   confirmed: boolean;
   confirmationCode?: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
-export interface RegisterReturn {
+export interface RegisterReturn extends HasToken {
   user: User;
-  token: string;
 }
 
 export interface RegisterDependencies {
-  databaseGetUserByEmail: (email: string) => Promise<User | null>;
-  databaseSaveUser: (user: User) => Promise<User>;
+  databaseGetUserByEmail: DatabaseGetByField<User, string>;
+  databaseSaveUser: DatabaseSave<User>;
 }
 
 export interface RegisterData {
@@ -25,13 +34,12 @@ export interface RegisterData {
   password: string;
 }
 
-export interface LoginReturn {
+export interface LoginReturn extends HasToken {
   user: User;
-  token: string;
 }
 
 export interface LoginDependencies {
-  databaseGetUserByEmail: (email: string) => Promise<User | null>;
+  databaseGetUserByEmail: DatabaseGetByField<User, string>;
 }
 
 export interface LoginData {
@@ -40,16 +48,14 @@ export interface LoginData {
 }
 
 export interface GetUserDependencies {
-  databaseGetUserById: (id: string) => Promise<User | null>;
+  databaseGetUserById: DatabaseGetById<User>;
 }
 
-export interface GetUserData {
-  jwt: string;
-}
+export interface GetUserData extends HasToken {}
 
 export interface ConfirmUserDependencies {
-  databaseGetUserByEmail: (email: string) => Promise<User | null>;
-  databaseSaveUser: (user: User) => Promise<User>;
+  databaseGetUserByEmail: DatabaseGetByField<User, string>;
+  databaseSaveUser: DatabaseSave<User>;
 }
 
 export interface ConfirmUserData {
@@ -57,22 +63,19 @@ export interface ConfirmUserData {
   code: string;
 }
 
-export interface RemoveUserData {
-  jwt: string;
-}
+export interface RemoveUserData extends HasToken {}
 
 export interface RemoveUserDependencies extends GetUserDependencies {
-  databaseRemoveUser: (user: User) => void;
+  databaseRemoveUser: DatabaseRemove<User>;
 }
 
-export interface UpdateUserData {
-  jwt: string;
+export interface UpdateUserData extends HasToken {
   name?: string;
   email?: string;
   password?: string;
 }
 
 export interface UpdateUserDependencies extends GetUserDependencies {
-  databaseSaveUser: (user: User) => Promise<User>;
-  databaseGetUserByEmail: (email: string) => Promise<User | null>;
+  databaseSaveUser: DatabaseSave<User>;
+  databaseGetUserByEmail: DatabaseGetByField<User, string>;
 }
