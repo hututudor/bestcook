@@ -185,3 +185,15 @@ export const updateUser = ({
   await databaseSaveUser(user);
   return sanitizeUser(user);
 };
+
+export const getUserIfAuth = ({
+  databaseGetUserById
+}: GetUserDependencies) => async (data: GetUserData) => {
+  let user: User | null = null;
+
+  try {
+    user = await getUser({ databaseGetUserById })(data);
+  } catch (e) {}
+
+  return user;
+};

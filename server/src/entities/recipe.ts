@@ -13,7 +13,7 @@ import {
   getRecipesByUserIdSchema,
   getRecipeSchema
 } from '../validation/recipe';
-import { getUser } from './user';
+import { getUser, getUserIfAuth } from './user';
 import {
   recipeDoesNotExistError,
   recipeUnauthorizedError
@@ -27,8 +27,8 @@ export const createRecipe = ({
 }: CreateRecipeDependencies) => async (
   data: CreateRecipeData
 ): Promise<Recipe> => {
-  const user = await getUser({ databaseGetUserById })(data);
   await validateSchema(createRecipeSchema, data);
+  const user = await getUser({ databaseGetUserById })(data);
 
   let recipe: Recipe = {
     id: '',
@@ -56,12 +56,7 @@ export const getRecipe = ({
   databaseGetUserById
 }: GetRecipeDependencies) => async (data: GetRecipeData): Promise<Recipe> => {
   await validateSchema(getRecipeSchema, data);
-  let user: User | null = null;
-
-  try {
-    user = await getUser({ databaseGetUserById })(data);
-  } catch (e) {}
-
+  const user = await getUserIfAuth({ databaseGetUserById })(data);
   const recipe = await databaseGetRecipeById(data.id);
 
   if (!recipe) {
@@ -82,11 +77,7 @@ export const getRecipesByUserId = ({
   data: GetRecipesByUserIdData
 ): Promise<Recipe[]> => {
   await validateSchema(getRecipesByUserIdSchema, data);
-  let user: User | null = null;
-
-  try {
-    user = await getUser({ databaseGetUserById })(data);
-  } catch (e) {}
+  const user = await getUserIfAuth({ databaseGetUserById })(data);
 
   const recipes = await databaseGetRecipesByUserId(
     data.id,
