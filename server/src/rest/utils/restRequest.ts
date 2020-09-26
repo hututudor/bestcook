@@ -11,7 +11,6 @@ export const restRequest = (fn: Fn) => async (req: any, res: any) => {
     if (e.code > 600) {
       e.code = 500;
     }
-
     res.status(e.code || 500).json({ message: e.message, payload: e.payload });
   }
 };

@@ -7,16 +7,20 @@ import {
   HasTimestamps
 } from './utils/generics';
 
-export interface HasToken {
-  jwt: string;
-}
-
 export interface User extends HasID, HasTimestamps {
   name: string;
   email: string;
   password?: string;
   confirmed: boolean;
   confirmationCode?: string;
+}
+
+export interface HasToken {
+  jwt: string;
+}
+
+export interface HasAuth {
+  databaseGetUserById: DatabaseGetById<User>;
 }
 
 export interface RegisterReturn extends HasToken {
@@ -47,9 +51,7 @@ export interface LoginData {
   password: string;
 }
 
-export interface GetUserDependencies {
-  databaseGetUserById: DatabaseGetById<User>;
-}
+export interface GetUserDependencies extends HasAuth {}
 
 export interface GetUserData extends HasToken {}
 
@@ -65,7 +67,7 @@ export interface ConfirmUserData {
 
 export interface RemoveUserData extends HasToken {}
 
-export interface RemoveUserDependencies extends GetUserDependencies {
+export interface RemoveUserDependencies extends HasAuth {
   databaseRemoveUser: DatabaseRemove<User>;
 }
 
@@ -75,7 +77,7 @@ export interface UpdateUserData extends HasToken {
   password?: string;
 }
 
-export interface UpdateUserDependencies extends GetUserDependencies {
+export interface UpdateUserDependencies extends HasAuth {
   databaseSaveUser: DatabaseSave<User>;
   databaseGetUserByEmail: DatabaseGetByField<User, string>;
 }

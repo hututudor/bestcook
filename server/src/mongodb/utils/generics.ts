@@ -30,6 +30,24 @@ export function getModelByField<T extends HasId, F>({
   };
 }
 
+export function getManyModelByField<T extends HasId, F>({
+  castMongoToInterface,
+  Model,
+  field
+}: CastFieldDependencies<T>) {
+  return async function(
+    fieldValue: F,
+    skip: number = 0,
+    limit: number = 0
+  ): Promise<T[]> {
+    const models = await Model.find({ [field]: fieldValue })
+      .skip(skip)
+      .limit(limit);
+
+    return models.map(castMongoToInterface);
+  };
+}
+
 export function getModelById<T extends HasId>({
   castMongoToInterface,
   Model

@@ -7,7 +7,7 @@
     "tsc": "tsc",
     "dev": "ts-node-dev --respawn --transpile-only src/rest/main.ts",
     "prod": "tsc && node build/src/rest/main.js",
-    "test": "jest --watch"
+    "test": "jest --watch --verbose"
   },
   "author": "",
   "license": "ISC",

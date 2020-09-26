@@ -1,5 +1,4 @@
 import * as yup from 'yup';
-import * as faker from 'faker';
 
 export const registerSchema = yup.object().shape({
   name: yup.string().required(),

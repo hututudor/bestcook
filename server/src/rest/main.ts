@@ -1,3 +1,5 @@
+import { recipeRouter } from './routes/recipe';
+
 require('dotenv').config();
 
 import express from 'express';
@@ -27,6 +29,7 @@ app.use(morgan('tiny'));
 app.use(helmet());
 
 app.use('/users', userRouter);
+app.use('/recipes', recipeRouter);
 
 app.get('/', (req, res) => {
   res.send('Server is up and running');

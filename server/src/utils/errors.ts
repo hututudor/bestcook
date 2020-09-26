@@ -51,3 +51,13 @@ export const userNotConfirmedError = createError(
   'User is not confirmed',
   StatusCodes.UNAUTHORIZED
 );
+
+export const recipeDoesNotExistError = createError(
+  'Recipe does not exists',
+  StatusCodes.NOT_FOUND
+);
+
+export const recipeUnauthorizedError = createError(
+  'Recipe is not authorized',
+  StatusCodes.UNAUTHORIZED
+);

@@ -35,7 +35,6 @@ import {
 import { validateSchema } from '../utils/validateSchema';
 import { sendMail } from '../utils/mail';
 import { generateCode } from '../utils/random';
-import { databaseGetUserByEmail, databaseSaveUser } from '../mongodb/user';
 
 export const sanitizeUser = (user: User): User => {
   const newUser = { ...user };
@@ -180,6 +179,8 @@ export const updateUser = ({
   if (data.password) {
     user.password = await encrypt(data.password);
   }
+
+  user.updatedAt = new Date();
 
   await databaseSaveUser(user);
   return sanitizeUser(user);
