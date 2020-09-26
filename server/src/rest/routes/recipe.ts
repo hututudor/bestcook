@@ -3,7 +3,8 @@ import { restRequest } from '../utils/restRequest';
 import {
   createRecipe,
   getRecipe,
-  getRecipesByUserId
+  getRecipesByUserId,
+  updateRecipe
 } from '../../entities/recipe';
 import { databaseGetUserById } from '../../mongodb/user';
 import {
@@ -63,6 +64,20 @@ recipeRouter.get(
       ...includeJWT(req),
       ...includeId(req),
       ...includePagination(req)
+    });
+  })
+);
+
+recipeRouter.put(
+  '/:id',
+  restRequest(async req => {
+    return updateRecipe({
+      databaseGetUserById,
+      databaseSaveRecipe
+    })({
+      ...includeJWT(req),
+      ...includeId(req),
+      ...includeCommonFields(req)
     });
   })
 );

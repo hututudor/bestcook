@@ -5,13 +5,16 @@ import {
   GetRecipeDependencies,
   GetRecipesByUserIdData,
   GetRecipesByUserIdDependencies,
-  Recipe
+  Recipe,
+  UpdateRecipeData,
+  UpdateRecipeDependencies
 } from '../interfaces/recipe';
 import { validateSchema } from '../utils/validateSchema';
 import {
   createRecipeSchema,
   getRecipesByUserIdSchema,
-  getRecipeSchema
+  getRecipeSchema,
+  updateRecipeSchema
 } from '../validation/recipe';
 import { getUser, getUserIfAuth } from './user';
 import {
@@ -19,7 +22,12 @@ import {
   recipeUnauthorizedError
 } from '../utils/errors';
 import { User } from '../interfaces/user';
-import { hasPermissionToAccessRecipe } from '../permissions/recipe';
+import {
+  hasPermissionToAccessRecipe,
+  hasPermissionToModifyRecipe
+} from '../permissions/recipe';
+import { databaseGetRecipeById } from '../mongodb/recipe';
+import { updateField } from '../utils/updateField';
 
 export const createRecipe = ({
   databaseGetUserById,
@@ -86,4 +94,40 @@ export const getRecipesByUserId = ({
   );
 
   return recipes.filter(recipe => hasPermissionToAccessRecipe(user, recipe));
+};
+
+export const updateRecipe = ({
+  databaseGetUserById,
+  databaseSaveRecipe
+}: UpdateRecipeDependencies) => async (
+  data: UpdateRecipeData
+): Promise<Recipe> => {
+  await validateSchema(updateRecipeSchema, data);
+  const user = await getUser({ databaseGetUserById })(data);
+
+  let recipe = await databaseGetRecipeById(data.id);
+
+  if (!recipe) {
+    throw recipeDoesNotExistError;
+  }
+
+  if (!hasPermissionToModifyRecipe(user, recipe)) {
+    throw recipeUnauthorizedError;
+  }
+
+  updateField<Recipe>(recipe, data, 'ingredients');
+  updateField<Recipe>(recipe, data, 'steps');
+  updateField<Recipe>(recipe, data, 'published');
+  updateField<Recipe>(recipe, data, 'title');
+  updateField<Recipe>(recipe, data, 'description');
+  updateField<Recipe>(recipe, data, 'images');
+  updateField<Recipe>(recipe, data, 'cover');
+  updateField<Recipe>(recipe, data, 'time_to_cook');
+  updateField<Recipe>(recipe, data, 'servings');
+  updateField<Recipe>(recipe, data, 'createdAt');
+  updateField<Recipe>(recipe, data, 'updatedAt');
+
+  recipe = await databaseSaveRecipe(recipe);
+
+  return recipe;
 };

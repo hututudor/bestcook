@@ -30,11 +30,7 @@ export interface Recipe extends HasID, HasTimestamps {
   servings: number;
 }
 
-export interface CreateRecipeDependencies extends HasAuth {
-  databaseSaveRecipe: DatabaseSave<Recipe>;
-}
-
-export interface CreateRecipeData extends HasToken {
+interface HasRecipeFields {
   published: boolean;
   ingredients: Ingredients[];
   steps: Step[];
@@ -44,6 +40,14 @@ export interface CreateRecipeData extends HasToken {
   cover: string;
   time_to_cook: number;
   servings: number;
+}
+
+export interface CreateRecipeDependencies extends HasAuth {
+  databaseSaveRecipe: DatabaseSave<Recipe>;
+}
+
+export interface CreateRecipeData extends HasToken, HasRecipeFields {
+  published: boolean;
 }
 
 export interface GetRecipeDependencies extends HasAuth {
@@ -60,3 +64,9 @@ export interface GetRecipesByUserIdData
   extends HasPagination,
     HasToken,
     HasID {}
+
+export interface UpdateRecipeDependencies extends HasAuth {
+  databaseSaveRecipe: DatabaseSave<Recipe>;
+}
+
+export interface UpdateRecipeData extends HasID, HasToken, HasRecipeFields {}
