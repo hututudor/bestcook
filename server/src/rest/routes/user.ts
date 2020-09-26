@@ -15,9 +15,15 @@ import {
   databaseSaveUser
 } from '../../mongodb/user';
 import { restRequest } from '../utils/restRequest';
-import { getToken } from '../utils/getToken';
+import { includeJWT } from '../utils/include';
 
 export const userRouter = Router();
+
+const includeCommonFields = (req: any) => ({
+  name: req.body.name,
+  email: req.body.email,
+  password: req.body.password
+});
 
 userRouter.post(
   '/register',
@@ -25,11 +31,7 @@ userRouter.post(
     return registerUser({
       databaseSaveUser,
       databaseGetUserByEmail
-    })({
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password
-    });
+    })(includeCommonFields(req));
   })
 );
 
@@ -51,9 +53,7 @@ userRouter.get(
     return sanitizeUser(
       await getUser({
         databaseGetUserById
-      })({
-        jwt: getToken(req)
-      })
+      })(includeJWT(req))
     );
   })
 );
@@ -79,10 +79,8 @@ userRouter.put(
       databaseGetUserById,
       databaseSaveUser
     })({
-      jwt: getToken(req),
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password
+      ...includeJWT(req),
+      ...includeCommonFields(req)
     });
   })
 );
@@ -93,8 +91,6 @@ userRouter.delete(
     return removeUser({
       databaseGetUserById,
       databaseRemoveUser
-    })({
-      jwt: getToken(req)
-    });
+    })(includeJWT(req));
   })
 );

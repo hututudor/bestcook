@@ -19,6 +19,7 @@ import {
   recipeUnauthorizedError
 } from '../utils/errors';
 import { User } from '../interfaces/user';
+import { hasPermissionToAccessRecipe } from '../permissions/recipe';
 
 export const createRecipe = ({
   databaseGetUserById,
@@ -67,7 +68,7 @@ export const getRecipe = ({
     throw recipeDoesNotExistError;
   }
 
-  if (!((user && user.id && user.id === recipe.user_id) || recipe.published)) {
+  if (!hasPermissionToAccessRecipe(user, recipe)) {
     throw recipeUnauthorizedError;
   }
 
@@ -93,8 +94,5 @@ export const getRecipesByUserId = ({
     data.limit
   );
 
-  return recipes.filter(
-    recipe =>
-      (user && user.id && user.id === recipe.user_id) || recipe.published
-  );
+  return recipes.filter(recipe => hasPermissionToAccessRecipe(user, recipe));
 };

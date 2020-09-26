@@ -11,9 +11,21 @@ import {
   databaseGetRecipesByUserId,
   databaseSaveRecipe
 } from '../../mongodb/recipe';
-import { getToken } from '../utils/getToken';
+import { includeId, includeJWT, includePagination } from '../utils/include';
 
 export const recipeRouter = Router();
+
+const includeCommonFields = (req: any) => ({
+  ingredients: req.body.ingredients,
+  steps: req.body.steps,
+  published: req.body.published,
+  title: req.body.title,
+  description: req.body.description,
+  images: req.body.images,
+  cover: req.body.cover,
+  time_to_cook: req.body.time_to_cook,
+  servings: req.body.servings
+});
 
 recipeRouter.post(
   '/',
@@ -22,16 +34,8 @@ recipeRouter.post(
       databaseGetUserById,
       databaseSaveRecipe
     })({
-      jwt: getToken(req),
-      ingredients: req.body.ingredients,
-      steps: req.body.steps,
-      published: req.body.published,
-      title: req.body.title,
-      description: req.body.description,
-      images: req.body.images,
-      cover: req.body.cover,
-      time_to_cook: req.body.time_to_cook,
-      servings: req.body.servings
+      ...includeJWT(req),
+      ...includeCommonFields(req)
     });
   })
 );
@@ -43,8 +47,8 @@ recipeRouter.get(
       databaseGetUserById,
       databaseGetRecipeById
     })({
-      jwt: getToken(req),
-      id: req.params.id
+      ...includeJWT(req),
+      ...includeId(req)
     });
   })
 );
@@ -56,10 +60,9 @@ recipeRouter.get(
       databaseGetUserById,
       databaseGetRecipesByUserId
     })({
-      jwt: getToken(req),
-      id: req.params.id,
-      skip: +req.query.skip || 0,
-      limit: +req.query.limit || 0
+      ...includeJWT(req),
+      ...includeId(req),
+      ...includePagination(req)
     });
   })
 );
