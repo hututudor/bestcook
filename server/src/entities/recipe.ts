@@ -6,6 +6,8 @@ import {
   GetRecipesByUserIdData,
   GetRecipesByUserIdDependencies,
   Recipe,
+  RemoveRecipeData,
+  RemoveRecipeDependencies,
   UpdateRecipeData,
   UpdateRecipeDependencies
 } from '../interfaces/recipe';
@@ -16,12 +18,16 @@ import {
   getRecipeSchema,
   updateRecipeSchema
 } from '../validation/recipe';
-import { getUser, getUserIfAuth } from './user';
+import { getUser, getUserIfAuth, sanitizeUser } from './user';
 import {
   recipeDoesNotExistError,
   recipeUnauthorizedError
 } from '../utils/errors';
-import { User } from '../interfaces/user';
+import {
+  RemoveUserData,
+  RemoveUserDependencies,
+  User
+} from '../interfaces/user';
 import {
   hasPermissionToAccessRecipe,
   hasPermissionToModifyRecipe
@@ -129,5 +135,27 @@ export const updateRecipe = ({
 
   recipe = await databaseSaveRecipe(recipe);
 
+  return recipe;
+};
+
+export const removeRecipe = ({
+  databaseGetUserById,
+  databaseRemoveRecipe
+}: RemoveRecipeDependencies) => async (
+  data: RemoveRecipeData
+): Promise<Recipe> => {
+  const user = await getUser({ databaseGetUserById })(data);
+
+  const recipe = await databaseGetRecipeById(data.id);
+
+  if (!recipe) {
+    throw recipeDoesNotExistError;
+  }
+
+  if (!hasPermissionToModifyRecipe(user, recipe)) {
+    throw recipeUnauthorizedError;
+  }
+
+  await databaseRemoveRecipe(recipe);
   return recipe;
 };

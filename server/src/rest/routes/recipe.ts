@@ -4,12 +4,14 @@ import {
   createRecipe,
   getRecipe,
   getRecipesByUserId,
+  removeRecipe,
   updateRecipe
 } from '../../entities/recipe';
 import { databaseGetUserById } from '../../mongodb/user';
 import {
   databaseGetRecipeById,
   databaseGetRecipesByUserId,
+  databaseRemoveRecipe,
   databaseSaveRecipe
 } from '../../mongodb/recipe';
 import { includeId, includeJWT, includePagination } from '../utils/include';
@@ -78,6 +80,19 @@ recipeRouter.put(
       ...includeJWT(req),
       ...includeId(req),
       ...includeCommonFields(req)
+    });
+  })
+);
+
+recipeRouter.delete(
+  '/:id',
+  restRequest(async req => {
+    return removeRecipe({
+      databaseGetUserById,
+      databaseRemoveRecipe
+    })({
+      ...includeJWT(req),
+      ...includeId(req)
     });
   })
 );

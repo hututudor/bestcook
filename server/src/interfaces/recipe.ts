@@ -1,6 +1,7 @@
 import {
   DatabaseGetById,
   DatabaseGetManyByField,
+  DatabaseRemove,
   DatabaseSave,
   HasID,
   HasPagination,
@@ -70,3 +71,9 @@ export interface UpdateRecipeDependencies extends HasAuth {
 }
 
 export interface UpdateRecipeData extends HasID, HasToken, HasRecipeFields {}
+
+export interface RemoveRecipeDependencies extends HasAuth {
+  databaseRemoveRecipe: DatabaseRemove<Recipe>;
+}
+
+export interface RemoveRecipeData extends HasID, HasToken {}
