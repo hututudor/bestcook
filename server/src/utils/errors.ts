@@ -4,7 +4,7 @@ const createError = (message: string, code: number, payload?: any) => {
   const error = new Error(message);
 
   // @ts-ignore
-  error['code'] = code;
+  error['err_code'] = code;
 
   if (payload) {
     // @ts-ignore

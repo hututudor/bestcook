@@ -8,9 +8,11 @@ export const restRequest = (fn: Fn) => async (req: any, res: any) => {
 
     res.status(200).json(result);
   } catch (e) {
-    if (e.code > 600) {
-      e.code = 500;
+    if (e.err_code === undefined) {
+      console.error(e);
+      res.status(500);
     }
-    res.status(e.code || 500).json({ message: e.message, payload: e.payload });
+
+    res.status(e.err_code).json({ message: e.message, payload: e.payload });
   }
 };
