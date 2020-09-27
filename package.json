@@ -1,0 +1,21 @@
+{
+  "name": "bestcook",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hututudor/bestcook.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hututudor/bestcook/issues"
+  },
+  "homepage": "https://github.com/hututudor/bestcook#readme"
+}
