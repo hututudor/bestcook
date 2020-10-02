@@ -1,13 +1,19 @@
 import React from 'react';
-import { BrowserRouter, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+
+import { AuthContextProvider } from 'modules/auth/context/AuthContext';
 import { NotFound } from './screens/NotFound';
+import { Register } from './screens/Register';
 
 export const Router = () => {
   return (
-    <BrowserRouter>
-      <Switch>
-        <NotFound />
-      </Switch>
-    </BrowserRouter>
+    <AuthContextProvider>
+      <BrowserRouter>
+        <Switch>
+          <Route path="/register" exact component={Register} />
+          <NotFound />
+        </Switch>
+      </BrowserRouter>
+    </AuthContextProvider>
   );
 };

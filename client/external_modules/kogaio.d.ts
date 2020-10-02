@@ -1,146 +1,159 @@
-const ActivityIndicator: React.FC<VariantProps &
-  ActivityIndicatorSpecificProps>;
-
-const Anchor: React.FC<BorderProps &
-  ColorProps &
-  FlexProps &
-  LayoutProps &
-  PositionProps &
-  ShadowProps &
-  SpaceProps &
-  TypographyProps &
-  VariantProps &
-  AnchorSpecificProps>;
-
-const Button: React.FC<BorderProps &
-  ButtonStyleProps &
-  ColorProps &
-  ColorStyleProps &
-  FlexProps &
-  LayoutProps &
-  PositionProps &
-  ShadowProps &
-  SpaceProps &
-  TypographyProps &
-  VariantProps &
-  ButtonSpecificProps>;
-
-const Card: React.FC<BorderProps &
-  ColorProps &
-  ColorStyleProps &
-  FlexProps &
-  LayoutProps &
-  PositionProps &
-  ShadowProps &
-  SpaceProps &
-  TypographyProps &
-  VariantProps &
-  CardSpecificProps>;
-
-const Checkbox: React.FC<ColorProps &
-  TypographyProps &
-  VariantProps &
-  CheckboxSpecificProps>;
-
-const Chip: React.FC<ChipSpecificProps>;
-
-const Checkbox: React.FC<CollapsibleSpecificProps>;
-
-const Dropdown: React.FC<VariantProps & DropdownSpecificProps> & {
-  Option: React.FC<VariantProps & OptionSpecificProps>;
-};
-
-const List: React.FC<VariantProps & ListSpecificProps>;
-
-const Icon: React.FC<BorderProps &
-  ColorProps &
-  LayoutProps &
-  PositionProps &
-  SpaceProps &
-  TypographyProps &
-  IconSpecificProps>;
-
-const IconButton: React.FC<IconButtonSpecificProps>;
-
-const Image: React.FC<BorderProps &
-  LayoutProps &
-  PositionProps &
-  SpaceProps &
-  ImageSpecificProps>;
-
-const Input: React.FC<BorderProps &
-  ColorProps &
-  FlexProps &
-  LayoutProps &
-  PositionProps &
-  ShadowProps &
-  TypographyProps &
-  InputSpecificProps &
-  VariantProps>;
-
-const MenuList: React.FC<MenuListSpecificProps> & {
-  Item: React.FC<ListItemSpecificProps>;
-};
-
-const Modal: React.FC<ModalSpecificProps>;
-
-const Box: React.FC<BackgroundProps &
-  BorderProps &
-  ShadowProps &
-  ColorProps &
-  ColorStyleProps &
-  LayoutProps &
-  PositionProps &
-  SpaceProps &
-  TypographyProps>;
-
-const Flex: React.FC<FlexProps & LayoutProps>;
-
-const Hide: React.FC<HideSpecificProps>;
-
-const Space: React.FC<SpaceSpecificProps>;
-
-const Skeleton: React.FC<SkeletonSpecificProps>;
-
-const Tooltip: React.FC<BorderProps &
-  ColorProps &
-  LayoutProps &
-  PositionProps &
-  SpaceSpecificProps &
-  ShadowProps &
-  TooltipSpecificProps &
-  VariantProps>;
-
-const TopBar: React.FC<BorderProps &
-  ColorProps &
-  ColorStyleProps &
-  FlexProps &
-  LayoutProps &
-  PositionProps &
-  ShadowProps &
-  SpaceProps &
-  TypographyProps &
-  VariantProps>;
-
-const Touchable: React.FC<BorderProps &
-  ColorProps &
-  FlexProps &
-  LayoutProps &
-  PositionProps &
-  SpaceProps &
-  TypographyProps &
-  TouchableSpecificProps>;
-
-const Typography: React.FC<ColorProps &
-  LayoutProps &
-  SpaceProps &
-  TextStyleProps &
-  TypographyProps &
-  VariantProps &
-  AsProps &
-  TypographySpecificProps>;
-
 declare module '@ivoryio/kogaio' {
+  const ActivityIndicator: React.FC<VariantProps &
+    ActivityIndicatorSpecificProps &
+    Ref>;
+
+  const Anchor: React.FC<BorderProps &
+    ColorProps &
+    FlexProps &
+    LayoutProps &
+    PositionProps &
+    ShadowProps &
+    SpaceProps &
+    TypographyProps &
+    VariantProps &
+    AnchorSpecificProps &
+    Ref>;
+
+  const Button: React.FC<BorderProps &
+    ButtonStyleProps &
+    ColorProps &
+    ColorStyleProps &
+    FlexProps &
+    LayoutProps &
+    PositionProps &
+    ShadowProps &
+    SpaceProps &
+    TypographyProps &
+    VariantProps &
+    ButtonSpecificProps &
+    Ref>;
+
+  const Card: React.FC<BorderProps &
+    ColorProps &
+    ColorStyleProps &
+    FlexProps &
+    LayoutProps &
+    PositionProps &
+    ShadowProps &
+    SpaceProps &
+    TypographyProps &
+    VariantProps &
+    CardSpecificProps &
+    Ref>;
+
+  const Checkbox: React.FC<ColorProps &
+    TypographyProps &
+    VariantProps &
+    CheckboxSpecificProps &
+    Ref>;
+
+  const Chip: React.FC<ChipSpecificProps & Ref>;
+
+  const Checkbox: React.FC<CollapsibleSpecificProps & Ref>;
+
+  const Dropdown: React.FC<VariantProps & DropdownSpecificProps & Ref> & {
+    Option: React.FC<VariantProps & OptionSpecificProps & Ref>;
+  };
+
+  const List: React.FC<VariantProps & ListSpecificProps & Ref>;
+
+  const Icon: React.FC<BorderProps &
+    ColorProps &
+    LayoutProps &
+    PositionProps &
+    SpaceProps &
+    TypographyProps &
+    IconSpecificProps &
+    Ref>;
+
+  const IconButton: React.FC<IconButtonSpecificProps & Ref>;
+
+  const Image: React.FC<BorderProps &
+    LayoutProps &
+    PositionProps &
+    SpaceProps &
+    ImageSpecificProps &
+    Ref>;
+
+  const Input: React.FC<BorderProps &
+    ColorProps &
+    FlexProps &
+    LayoutProps &
+    PositionProps &
+    ShadowProps &
+    TypographyProps &
+    InputSpecificProps &
+    VariantProps &
+    Ref>;
+
+  const MenuList: React.FC<MenuListSpecificProps & Ref> & {
+    Item: React.FC<ListItemSpecificProps & Ref>;
+  };
+
+  const Modal: React.FC<ModalSpecificProps & Ref>;
+
+  const Box: React.FC<BackgroundProps &
+    BorderProps &
+    ShadowProps &
+    ColorProps &
+    ColorStyleProps &
+    LayoutProps &
+    PositionProps &
+    SpaceProps &
+    TypographyProps &
+    Ref>;
+
+  const Flex: React.FC<FlexProps & LayoutProps & Ref & SpaceProps>;
+
+  const Hide: React.FC<HideSpecificProps & Ref>;
+
+  const Space: React.FC<SpaceSpecificProps & SpaceProps & Ref>;
+
+  const Skeleton: React.FC<SkeletonSpecificProps & Ref>;
+
+  const Tooltip: React.FC<BorderProps &
+    ColorProps &
+    LayoutProps &
+    PositionProps &
+    SpaceSpecificProps &
+    ShadowProps &
+    TooltipSpecificProps &
+    VariantProps &
+    Ref>;
+
+  const TopBar: React.FC<BorderProps &
+    ColorProps &
+    ColorStyleProps &
+    FlexProps &
+    LayoutProps &
+    PositionProps &
+    ShadowProps &
+    SpaceProps &
+    TypographyProps &
+    VariantProps &
+    Ref>;
+
+  const Touchable: React.FC<BorderProps &
+    ColorProps &
+    FlexProps &
+    LayoutProps &
+    PositionProps &
+    SpaceProps &
+    TypographyProps &
+    TouchableSpecificProps &
+    Ref>;
+
+  const Typography: React.FC<ColorProps &
+    LayoutProps &
+    SpaceProps &
+    TextStyleProps &
+    TypographyProps &
+    VariantProps &
+    AsProps &
+    TypographySpecificProps &
+    Ref>;
+
   export {
     Anchor,
     Button,
@@ -168,102 +181,6 @@ declare module '@ivoryio/kogaio' {
   };
 }
 
-declare module '@ivoryio/kogaio/Anchor' {
-  export default Anchor;
-}
-
-declare module '@ivoryio/kogaio/Button' {
-  export default Button;
-}
-
-declare module '@ivoryio/kogaio/Card' {
-  export default Card;
-}
-
-declare module '@ivoryio/kogaio/Checkbox' {
-  export default Checkbox;
-}
-
-declare module '@ivoryio/kogaio/Chip' {
-  export default Chip;
-}
-
-declare module '@ivoryio/kogaio/Checkbox' {
-  export default Checkbox;
-}
-
-declare module '@ivoryio/kogaio/Dropdown' {
-  export default Dropdown;
-}
-
-declare module '@ivoryio/kogaio/List' {
-  export default List;
-}
-
-declare module '@ivoryio/kogaio/Icon' {
-  export default Icon;
-}
-
-declare module '@ivoryio/kogaio/IconButton' {
-  export default IconButton;
-}
-
-declare module '@ivoryio/kogaio/Image' {
-  export default Image;
-}
-
-declare module '@ivoryio/kogaio/Input' {
-  export default Input;
-}
-
-declare module '@ivoryio/kogaio/MenuList' {
-  export default MenuList;
-}
-
-declare module '@ivoryio/kogaio/Modal' {
-  export default Modal;
-}
-
-declare module '@ivoryio/kogaio/Responsive' {
-  export { Box, Flex, Hide, Space };
-}
-
-declare module '@ivoryio/kogaio/Responsive/Box' {
-  export default Box;
-}
-
-declare module '@ivoryio/kogaio/Responsive/Flex' {
-  export default Flex;
-}
-
-declare module '@ivoryio/kogaio/Responsive/Hide' {
-  export default Hide;
-}
-
-declare module '@ivoryio/kogaio/Responsive/Space' {
-  export default Space;
-}
-
-declare module '@ivoryio/kogaio/Skeleton' {
-  export default Skeleton;
-}
-
-declare module '@ivoryio/kogaio/Tooltip' {
-  export default Tooltip;
-}
-
-declare module '@ivoryio/kogaio/TopBar' {
-  export default TopBar;
-}
-
-declare module '@ivoryio/kogaio/Touchable' {
-  export default Touchable;
-}
-
-declare module '@ivoryio/kogaio/Typography' {
-  export default Typography;
-}
-
 declare module '@ivoryio/kogaio/utils' {
   function themeGet(path: string, fallback: any = null): string;
   function themed(key: string): any;
@@ -289,6 +206,10 @@ declare module '@ivoryio/kogaio/utils' {
 
   function hexToRgbA(hex: string, alpha: string): string;
   function buildTheme(obj: any): any;
+}
+
+interface Ref {
+  ref?: any;
 }
 
 interface ActivityIndicatorSpecificProps {
