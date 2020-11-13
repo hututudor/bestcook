@@ -1,17 +1,20 @@
 import { createGlobalStyle } from 'styled-components';
-import { themeGet } from '@ivoryio/kogaio/utils';
+import { colors } from './colors';
 
 export const GlobalStyle = createGlobalStyle`
+  html {
+    font-size: 62.5%;
+  }
+
   body {
-    margin: ${themeGet('space.0')}px;
-    padding: ${themeGet('space.0')}px;
-    font-family: ${themeGet('fonts.primary')};
+    margin: 0;
+    padding: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     width: 100%;
     height: 100%;
     overflow-x: hidden;
-    background-color: ${themeGet('colors.grey_050')}
+    background-color: ${colors.blue_grey_050}
   }
   
   code {

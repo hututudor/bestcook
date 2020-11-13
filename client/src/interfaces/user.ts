@@ -9,23 +9,12 @@ export interface User {
   updatedAt: string;
 }
 
-export interface RegisterData {
-  name: string;
-  email: string;
-  password: string;
-}
-
 export interface RegisterResponse {
+  jwt: string;
   user: User;
-  token: string;
 }
 
-export interface LoginData {
-  email: string;
-  password: string;
-}
-
-export interface ConfirmUserData {
-  email: string;
-  code: string;
+export interface LoginResponse {
+  jwt: string;
+  user: User;
 }
